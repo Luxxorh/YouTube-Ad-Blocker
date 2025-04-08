@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Youtube Ad-Remover
 // @namespace    http://tampermonkey.net/
-// @version      2.0
-// @description  Automatically Removes YouTube Ads & Sponsored Content
+// @version      2.1
+// @description  Automatically Removes YouTube Ads & Sponsored Content Instantly
 // @author       Zale
 // @match        *://www.youtube.com/*
 // @updateURL    https://raw.githubusercontent.com/Derpixh/YouTube-Ad-Blocker/main/youtube_ad_blocker.user.js
@@ -39,12 +39,12 @@
         observer.observe(document.head, { childList: true });
     }
 
-    function removeAds() {
+    function removeAdsInstantly() {
         document.querySelectorAll('.ad-container, .video-ads, .ytp-ad-module, ytd-ad-slot-renderer')
             .forEach(el => el.remove());
     }
 
-    function skipAds() {
+    function skipAdsInstantly() {
         const video = document.querySelector('video');
         const skipButton = document.querySelector('.ytp-ad-skip-button');
         if (skipButton) skipButton.click();
@@ -63,7 +63,7 @@
         }
     }
 
-    async function skipSponsors() {
+    async function skipSponsorsInstantly() {
         const video = document.querySelector('video');
         if (!video) return;
 
@@ -75,17 +75,17 @@
         });
     }
 
-    function removeSponsoredVideos() {
+    function removeSponsoredVideosInstantly() {
         document.querySelectorAll('ytd-promoted-video-renderer, ytd-promoted-sparkles-text-search-renderer, ytd-sponsored-card-renderer')
             .forEach(el => el.remove());
     }
 
-    function removeHomepageSponsoredSections() {
+    function removeHomepageSponsoredSectionsInstantly() {
         document.querySelectorAll('ytd-rich-section-renderer, ytd-reel-shelf-renderer, ytd-merch-shelf-renderer')
             .forEach(el => el.remove());
     }
 
-    function removeSponsoredDescriptions() {
+    function removeSponsoredDescriptionsInstantly() {
         document.querySelectorAll('#description a').forEach(link => {
             if (/sponsored|aff|referral/i.test(link.textContent) || /aff|referral/.test(link.href)) {
                 link.remove();
@@ -93,7 +93,7 @@
         });
     }
 
-    function removeSponsoredTitles() {
+    function removeSponsoredTitlesInstantly() {
         document.querySelectorAll('ytd-video-renderer, ytd-grid-video-renderer').forEach(video => {
             const title = video.querySelector('#video-title');
             if (title && /sponsored|promotion|ad/i.test(title.textContent)) {
@@ -102,19 +102,27 @@
         });
     }
 
-    function cleanUI() {
+    function cleanUIInstantly() {
         const elementsToRemove = ['.ytp-pause-overlay', '#player-ads', '#masthead-ad', '.ytp-ad-progress', 'ytd-promoted-video-renderer'];
         elementsToRemove.forEach(selector => document.querySelectorAll(selector).forEach(el => el.remove()));
     }
 
-    setInterval(removeAds, 2000);
-    setInterval(skipAds, 2000);
-    setInterval(skipSponsors, 2000);
-    setInterval(removeSponsoredVideos, 2000);
-    setInterval(removeHomepageSponsoredSections, 2000);
-    setInterval(removeSponsoredDescriptions, 2000);
-    setInterval(removeSponsoredTitles, 2000);
-    setInterval(cleanUI, 2000);
+    function observeAndRemoveAds() {
+        const observer = new MutationObserver(() => {
+            removeAdsInstantly();
+            skipAdsInstantly();
+            skipSponsorsInstantly();
+            removeSponsoredVideosInstantly();
+            removeHomepageSponsoredSectionsInstantly();
+            removeSponsoredDescriptionsInstantly();
+            removeSponsoredTitlesInstantly();
+            cleanUIInstantly();
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
     blockAdRequests();
     preventAdScripts();
+    observeAndRemoveAds();
 })();
