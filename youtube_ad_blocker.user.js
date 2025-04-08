@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Youtube Ad-Remover
 // @namespace    http://tampermonkey.net/
-// @version      2.1
+// @version      2.2
 // @description  Automatically Removes YouTube Ads & Sponsored Content Instantly
 // @author       Zale
 // @match        *://www.youtube.com/*
@@ -107,6 +107,14 @@
         elementsToRemove.forEach(selector => document.querySelectorAll(selector).forEach(el => el.remove()));
     }
 
+    function removeBlankAdContainers() {
+        document.querySelectorAll('ytd-ad-slot-renderer, .ytp-ad-overlay-container, #player-ads, .ytp-ad-module').forEach(el => {
+            if (el.innerHTML.trim() === '') {
+                el.remove();
+            }
+        });
+    }
+
     function observeAndRemoveAds() {
         const observer = new MutationObserver(() => {
             removeAdsInstantly();
@@ -117,6 +125,7 @@
             removeSponsoredDescriptionsInstantly();
             removeSponsoredTitlesInstantly();
             cleanUIInstantly();
+            removeBlankAdContainers();
         });
 
         observer.observe(document.body, { childList: true, subtree: true });
