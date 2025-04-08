@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         YouTube Ad & Sponsor Blocker
+// @name         Youtube Ad-Remover
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @description  Automatically removes YouTube ads and skips sponsor segments
-// @author       Your Name
+// @author       Zale
 // @match        *://www.youtube.com/*
-// @updateURL    https://raw.githubusercontent.com/YourRepo/YouTubeAdBlocker/main/youtube_ad_blocker.user.js
-// @downloadURL  https://raw.githubusercontent.com/YourRepo/YouTubeAdBlocker/main/youtube_ad_blocker.user.js
+// @updateURL    https://github.com/Derpixh/YouTube-Ad-Blocker/raw/refs/heads/main/youtube_ad_blocker.user.js
+// @downloadURL  https://github.com/Derpixh/YouTube-Ad-Blocker/raw/refs/heads/main/youtube_ad_blocker.user.js
 // @grant        none
 // ==/UserScript==
 
