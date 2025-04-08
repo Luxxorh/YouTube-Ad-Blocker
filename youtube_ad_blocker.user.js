@@ -7,7 +7,7 @@
 // @match        *://www.youtube.com/*
 // @updateURL    https://github.com/Derpixh/YouTube-Ad-Blocker/raw/refs/heads/main/youtube_ad_blocker.user.js
 // @downloadURL  https://github.com/Derpixh/YouTube-Ad-Blocker/raw/refs/heads/main/youtube_ad_blocker.user.js
-// @grant        none
+// @grant        none 
 // ==/UserScript==
 
 (function() {
