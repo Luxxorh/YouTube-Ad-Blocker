@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Youtube Ad-Remover
 // @namespace    http://tampermonkey.net/
-// @version      2.6
-// @description  Automatically Removes YouTube Ads & Sponsored Content Instantly & Cleans Up Gaps (No Reflows)
+// @version      2.7
+// @description  Automatically Removes YouTube Ads & Sponsored Content Instantly (No Gaps & Sidebar Visible)
 // @author       Zale
 // @match        *://www.youtube.com/*
 // @updateURL    https://raw.githubusercontent.com/Derpixh/YouTube-Ad-Blocker/main/youtube_ad_blocker.user.js
@@ -43,13 +43,10 @@
         const selectors = [
             '.ad-container', '.video-ads', '.ytp-ad-module',
             'ytd-ad-slot-renderer', '#masthead-ad', '#player-ads',
-            '.ytp-ad-overlay-container', '.ytp-ad-progress',
+            '.ytp-ad-overlay-container', '.ytp-ad-progress'
         ];
         selectors.forEach(selector => {
-            document.querySelectorAll(selector).forEach(el => {
-                const parent = el.closest('ytd-rich-item-renderer, ytd-video-renderer, ytd-item-section-renderer') || el;
-                parent.remove();
-            });
+            document.querySelectorAll(selector).forEach(el => el.remove());
         });
     }
 
@@ -84,10 +81,7 @@
 
     function removeSponsoredVideosInstantly() {
         document.querySelectorAll('ytd-promoted-video-renderer, ytd-promoted-sparkles-text-search-renderer, ytd-sponsored-card-renderer')
-            .forEach(el => {
-                const container = el.closest('ytd-rich-item-renderer, ytd-video-renderer, ytd-item-section-renderer') || el;
-                container.remove();
-            });
+            .forEach(el => el.remove());
     }
 
     function removeHomepageSponsoredSectionsInstantly() {
@@ -98,8 +92,7 @@
     function removeSponsoredDescriptionsInstantly() {
         document.querySelectorAll('#description a').forEach(link => {
             if (/sponsored|aff|referral/i.test(link.textContent) || /aff|referral/.test(link.href)) {
-                const container = link.closest('ytd-expander, ytd-text-inline-expander-renderer');
-                (container || link).remove();
+                link.remove();
             }
         });
     }
@@ -114,34 +107,22 @@
     }
 
     function cleanUIInstantly() {
-        const selectors = [
-            '.ytp-pause-overlay',
-            'ytd-ad-slot-renderer',
-            '.ytp-ad-overlay-container',
-            '#player-ads',
-            '.ytp-ad-module',
-        ];
+        const selectors = ['.ytp-pause-overlay', '#player-ads', '#masthead-ad', '.ytp-ad-progress', 'ytd-promoted-video-renderer'];
         selectors.forEach(selector => {
-            document.querySelectorAll(selector).forEach(el => {
-                const parent = el.closest('ytd-rich-item-renderer, ytd-video-renderer') || el;
-                parent.remove();
-            });
+            document.querySelectorAll(selector).forEach(el => el.remove());
         });
     }
 
     function removeBlankAdContainers() {
         document.querySelectorAll('ytd-ad-slot-renderer, .ytp-ad-overlay-container, #player-ads, .ytp-ad-module').forEach(el => {
-            if (el.innerHTML.trim() === '') {
-                const container = el.closest('ytd-rich-item-renderer, ytd-item-section-renderer, ytd-video-renderer') || el;
-                container.remove();
-            }
+            if (el.innerHTML.trim() === '') el.remove();
         });
 
-        document.querySelectorAll('ytd-rich-item-renderer, ytd-item-section-renderer').forEach(el => {
-            if (!el.textContent.trim()) {
-                el.remove();
-            }
-        });
+        const videoContainer = document.querySelector('#primary');
+        if (videoContainer) videoContainer.style.marginTop = '0px';
+
+        const sidebar = document.querySelector('#secondary');
+        if (sidebar) sidebar.style.marginTop = '0px';
     }
 
     function observeAndRemoveAds() {
