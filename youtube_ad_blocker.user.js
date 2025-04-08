@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         Youtube Ad-Remover
 // @namespace    http://tampermonkey.net/
-// @version      1.1
-// @description  Automatically removes YouTube ads
+// @version      1.2
+// @description  Automatically Removes YouTube Ads
 // @author       Zale
 // @match        *://www.youtube.com/*
-// @updateURL    https://github.com/Derpixh/YouTube-Ad-Blocker/raw/refs/heads/main/youtube_ad_blocker.user.js
-// @downloadURL  https://github.com/Derpixh/YouTube-Ad-Blocker/raw/refs/heads/main/youtube_ad_blocker.user.js
+// @updateURL    https://raw.githubusercontent.com/Derpixh/YouTube-Ad-Blocker/main/youtube_ad_blocker.user.js
+// @downloadURL  https://raw.githubusercontent.com/Derpixh/YouTube-Ad-Blocker/main/youtube_ad_blocker.user.js
 // @grant        none
 // ==/UserScript==
 
@@ -74,6 +74,24 @@
         });
     }
 
+    function removeSponsoredVideos() {
+        document.querySelectorAll('ytd-promoted-video-renderer, ytd-promoted-sparkles-text-search-renderer')
+            .forEach(el => el.remove());
+    }
+
+    function removeSponsoredDescriptions() {
+        document.querySelectorAll('#description a').forEach(link => {
+            if (link.textContent.toLowerCase().includes('sponsored') || link.href.includes('aff')) link.remove();
+        });
+    }
+
+    function filterSponsoredTitles() {
+        document.querySelectorAll('ytd-video-renderer, ytd-grid-video-renderer').forEach(video => {
+            const title = video.querySelector('#video-title');
+            if (title && title.textContent.toLowerCase().includes('sponsored')) video.remove();
+        });
+    }
+
     function cleanUI() {
         const elementsToRemove = ['.ytp-pause-overlay', '#player-ads', '#masthead-ad', '.ytp-ad-progress', 'ytd-promoted-video-renderer'];
         elementsToRemove.forEach(selector => document.querySelectorAll(selector).forEach(el => el.remove()));
@@ -82,6 +100,9 @@
     setInterval(removeAds, 2000);
     setInterval(skipAds, 2000);
     setInterval(skipSponsors, 2000);
+    setInterval(removeSponsoredVideos, 2000);
+    setInterval(removeSponsoredDescriptions, 2000);
+    setInterval(filterSponsoredTitles, 2000);
     setInterval(cleanUI, 2000);
     blockAdRequests();
     preventAdScripts();
