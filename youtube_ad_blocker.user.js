@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Youtube Ad-Remover
 // @namespace    http://tampermonkey.net/
-// @version      1.2
-// @description  Automatically Removes YouTube Ads
+// @version      2.0
+// @description  Automatically Removes YouTube Ads & Sponsored Content
 // @author       Zale
 // @match        *://www.youtube.com/*
 // @updateURL    https://raw.githubusercontent.com/Derpixh/YouTube-Ad-Blocker/main/youtube_ad_blocker.user.js
@@ -40,7 +40,8 @@
     }
 
     function removeAds() {
-        document.querySelectorAll('.ad-container, .video-ads, .ytp-ad-module').forEach(el => el.remove());
+        document.querySelectorAll('.ad-container, .video-ads, .ytp-ad-module, ytd-ad-slot-renderer')
+            .forEach(el => el.remove());
     }
 
     function skipAds() {
@@ -75,20 +76,29 @@
     }
 
     function removeSponsoredVideos() {
-        document.querySelectorAll('ytd-promoted-video-renderer, ytd-promoted-sparkles-text-search-renderer')
+        document.querySelectorAll('ytd-promoted-video-renderer, ytd-promoted-sparkles-text-search-renderer, ytd-sponsored-card-renderer')
+            .forEach(el => el.remove());
+    }
+
+    function removeHomepageSponsoredSections() {
+        document.querySelectorAll('ytd-rich-section-renderer, ytd-reel-shelf-renderer, ytd-merch-shelf-renderer')
             .forEach(el => el.remove());
     }
 
     function removeSponsoredDescriptions() {
         document.querySelectorAll('#description a').forEach(link => {
-            if (link.textContent.toLowerCase().includes('sponsored') || link.href.includes('aff')) link.remove();
+            if (/sponsored|aff|referral/i.test(link.textContent) || /aff|referral/.test(link.href)) {
+                link.remove();
+            }
         });
     }
 
-    function filterSponsoredTitles() {
+    function removeSponsoredTitles() {
         document.querySelectorAll('ytd-video-renderer, ytd-grid-video-renderer').forEach(video => {
             const title = video.querySelector('#video-title');
-            if (title && title.textContent.toLowerCase().includes('sponsored')) video.remove();
+            if (title && /sponsored|promotion|ad/i.test(title.textContent)) {
+                video.remove();
+            }
         });
     }
 
@@ -101,8 +111,9 @@
     setInterval(skipAds, 2000);
     setInterval(skipSponsors, 2000);
     setInterval(removeSponsoredVideos, 2000);
+    setInterval(removeHomepageSponsoredSections, 2000);
     setInterval(removeSponsoredDescriptions, 2000);
-    setInterval(filterSponsoredTitles, 2000);
+    setInterval(removeSponsoredTitles, 2000);
     setInterval(cleanUI, 2000);
     blockAdRequests();
     preventAdScripts();
